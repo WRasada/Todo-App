@@ -1,7 +1,7 @@
 const mongoose    = require('mongoose');
 const validator   = require('validator');
 const jwt         = require('jsonwebtoken');
-const bcrypt      = require('bcrypstjs');
+const bcrypt      = require('bcryptjs');
 const _           = require('lodash');
 
 const Schema = mongoose.Schema;
@@ -14,7 +14,8 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
     validate: {
-      validator: validaotr.isEmail,
+      isAsync: true,
+      validator: validator.isEmail,
       message: '{VALUE} is not a valid email'
     }
   },
@@ -32,3 +33,5 @@ const UserSchema = new Schema({
 })
 
 const User = mongoose.model('User', UserSchema);
+
+module.exports = { User };

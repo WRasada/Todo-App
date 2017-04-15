@@ -7,6 +7,7 @@ const dateFormat      = require('dateformat');
 const { ObjectID }    = require('mongodb');
 
 const { mongoose }    = require('./config/db/mongoose');
+const { User }        = require('./models/user');
 const { Todo }        = require('./models/todo');
 const { isValid }     = require('./middleware/middleware');
 
@@ -102,7 +103,20 @@ app.delete('/todos/:id', (req, res) => {
 
 // POST /users/login - Login user and authenticate
 
-// POST /users/signup - Signup user and authenticate
+// POST /users - Signup user and authenticate
+
+app.post('/users', (req, res) => {
+  let user = new User({
+    email: req.body.email,
+    password: req.body.password
+  });
+
+  user.save().then((user) => {
+    res.send({ user })
+  }, (e) => {
+    res.status(400).send(e);
+  })
+})
 
 // DELETE /users/logout - Logout current user and remove token
 
