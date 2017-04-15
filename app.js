@@ -11,6 +11,9 @@ const { Todo }        = require('./models/todo');
 const app             = express();
 const port            = process.env.PORT;
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+
 // Todo Routes
 
 // GET /todos - Show todos
@@ -26,7 +29,15 @@ app.get('/todos', (req, res) => {
   });
 })
 // POST /todos - Create new todo
+app.post('/todos', (req, res) => {
+  let todo = new Todo({ text: req.body.text });
 
+  todo.save().then((todo) => {
+    res.send({todo});
+  }, (e) => {
+    res.status(400).send(e);
+  })
+})
 // GET /todos/:id - Show a single todo
 
 // PATCH /todos/:id - Edit a single todo
