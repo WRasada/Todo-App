@@ -61,3 +61,33 @@ describe('POST /todos', () => {
       })
   });
 });
+
+describe('GET /todos/:id', () => {
+  it('should return a single todo', done => {
+    let id = todos[0]._id.toHexString();
+
+    request(app)
+      .get(`/todos/${id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe(todos[0].text);
+      })
+      .end(done);
+  });
+
+  it('should return 404 for non object IDs', done => {
+    request(app)
+      .get('/todos/ThisIsNotAnObjectId')
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 if todo not found', done => {
+    let fakeId = new ObjectID().toHexString();
+
+    request(app)
+      .get(`/todos/${fakeId}`)
+      .expect(404)
+      .end(done);
+  });
+});
