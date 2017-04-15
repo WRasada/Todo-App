@@ -65,6 +65,14 @@ app.get('/todos/:id', isValid,  (req, res) => {
 app.patch('/todos/:id', (req, res) => {
   let id = req.params.id;
   let body = _.pick(req.body, ['text', 'completed']); // Properties to be updated
+
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = dateFormat('fullDate');
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
   Todo.findOneAndUpdate({ _id: id }, { $set: body }, { new: true }).then((todo) => {
     if (!todo) {
       return res.status(404).send();
