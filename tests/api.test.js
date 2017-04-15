@@ -1,12 +1,16 @@
-const expect = require('expect');
-const request = require('supertest');
-const { ObjectID } = require('mongodb');
+const _                        = require('lodash');
+const expect                   = require('expect');
+const request                  = require('supertest');
+const { ObjectID }             = require('mongodb');
 
-const { app } = require('./../app');
-const { Todo } = require('./../models/todo');
-const { todos, populateTodos } = require('./seed/seed');
+const { app }                  = require('./../app');
+const { User }                 = require('./../models/user');
+const { Todo }                 = require('./../models/todo');
+const { todos, populateTodos,
+        users, populateUsers } = require('./seed/seed');
 
 beforeEach(populateTodos);
+beforeEach(populateUsers);
 
 describe('GET /todos', () => {
   it('should return all todos', (done) => {
@@ -152,5 +156,53 @@ describe('DELETE /todos/:id', () => {
           done();
         }).catch((e) => done(e));
       })
+  });
+});
+
+describe('POST /users', () => {
+  it('should create a new user', (done) => {
+    let user = new User({ email: 'test@gmail.com', password: 'abc123'})
+    request(app)
+      .post('/users')
+      .send(user)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.user.email).toBe(user.email);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        User.find().then((users) => {
+          expect(users.length).toBe(3);
+          expect(users[2].email).toBe(user.email);
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+
+  it('should return validation errors if request invalid', (done) => {
+    request(app)
+      .post('/users')
+      .send({ email: 'invalidemail.com', password: '123' })
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errors).toExist();
+      })
+      .end(done);
+  });
+
+  it('should not create user if email in use', (done) => {
+    let body = _.pick(users[0], ['email', 'password']);
+
+    request(app)
+      .post('/users')
+      .send(body)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.errmsg).toExist();
+      })
+      .end(done);
   });
 });
