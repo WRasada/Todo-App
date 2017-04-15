@@ -8,6 +8,7 @@ const { ObjectID }    = require('mongodb');
 
 const { mongoose }    = require('./config/db/mongoose');
 const { Todo }        = require('./models/todo');
+const { isValid }     = require('./middleware/middleware');
 
 const app             = express();
 const port            = process.env.PORT;
@@ -45,12 +46,8 @@ app.post('/todos', (req, res) => {
 
 // GET /todos/:id - Show a single todo
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', isValid,  (req, res) => {
   let id = req.params.id;
-
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
 
   Todo.findById(id).then((todo) => {
     if (!todo) {
@@ -64,6 +61,20 @@ app.get('/todos/:id', (req, res) => {
 });
 
 // PATCH /todos/:id - Edit a single todo
+
+app.patch('/todos/:id', (req, res) => {
+  let id = req.params.id;
+  let body = _.pick(req.body, ['text', 'completed']); // Properties to be updated
+  Todo.findOneAndUpdate({ _id: id }, { $set: body }, { new: true }).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({ todo });
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 // DELETE /todos/:id - Delete a single todo
 
