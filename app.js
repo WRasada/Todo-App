@@ -3,6 +3,7 @@ require('./config/config');
 const _               = require('lodash');
 const express         = require('express');
 const bodyParser      = require('body-parser');
+const dateFormat      = require('dateformat');
 const { ObjectID }    = require('mongodb');
 
 const { mongoose }    = require('./config/db/mongoose');
@@ -14,9 +15,10 @@ const port            = process.env.PORT;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-// Todo Routes
+/************ Todo Routes ************/
 
 // GET /todos - Show todos
+
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     if (!todos) {
@@ -27,8 +29,10 @@ app.get('/todos', (req, res) => {
   }, (e) => {
     res.status(400).send();
   });
-})
+});
+
 // POST /todos - Create new todo
+
 app.post('/todos', (req, res) => {
   let todo = new Todo({ text: req.body.text });
 
@@ -37,8 +41,23 @@ app.post('/todos', (req, res) => {
   }, (e) => {
     res.status(400).send(e);
   })
-})
+});
+
 // GET /todos/:id - Show a single todo
+
+app.get('/todos/:id', (req, res) => {
+  let id = req.params.id;
+
+  Todo.findById(id).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({ todo })
+  }).catch((e) => {
+    res.status(400).send();
+  });
+});
 
 // PATCH /todos/:id - Edit a single todo
 
