@@ -86,6 +86,16 @@ app.patch('/todos/:id', (req, res) => {
 
 // DELETE /todos/:id - Delete a single todo
 
+app.delete('/todos/:id', (req, res) => {
+  let id = req.params.id;
+
+  Todo.findOneAndRemove({ _id: id }).then((todo) => {
+    res.send({ todo });
+  }, (e) => {
+    res.status(400).send();
+  });
+});
+
 // User Routes
 
 // GET /users/profile - Show logged in user profile
