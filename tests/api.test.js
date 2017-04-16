@@ -208,3 +208,26 @@ describe('POST /users', () => {
       .end(done);
   });
 });
+
+describe('GET /users/profile', () => {
+  it('should show profile if authenticated', (done) => {
+    request(app)
+      .get('/users/profile')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(users[0]._id.toHexString());
+        expect(res.body.email).toBe(users[0].email);
+      })
+      .end(done);
+  });
+  it('should return 401 if not authenticated', (done) => {
+    request(app)
+      .get('/users/profile')
+      .expect(401)
+      .expect((res) => {
+        expect(res.body).toEqual({});
+      })
+      .end(done);
+  });
+});
