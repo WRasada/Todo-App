@@ -1,18 +1,19 @@
-require('./config/config');
+                           require('./config/config');
 
-const _               = require('lodash');
-const express         = require('express');
-const bodyParser      = require('body-parser');
-const dateFormat      = require('dateformat');
-const { ObjectID }    = require('mongodb');
+const _                  = require('lodash');
+const express            = require('express');
+const bodyParser         = require('body-parser');
+const dateFormat         = require('dateformat');
+const { ObjectID }       = require('mongodb');
 
-const { mongoose }    = require('./config/db/mongoose');
-const { User }        = require('./models/user');
-const { Todo }        = require('./models/todo');
-const { isValid }     = require('./middleware/middleware');
+const { mongoose }       = require('./config/db/mongoose');
+const { User }           = require('./models/user');
+const { Todo }           = require('./models/todo');
+const { isValid,
+        authenticate }   = require('./middleware/middleware');
 
-const app             = express();
-const port            = process.env.PORT;
+const app                = express();
+const port               = process.env.PORT;
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -99,10 +100,6 @@ app.delete('/todos/:id', (req, res) => {
 
 // User Routes
 
-// GET /users/profile - Show logged in user profile
-
-// POST /users/login - Login user and authenticate
-
 // POST /users - Signup user and authenticate
 
 app.post('/users', (req, res) => {
@@ -119,6 +116,10 @@ app.post('/users', (req, res) => {
     res.status(400).send(e);
   })
 })
+
+// GET /users/profile - Show logged in user profile
+
+// POST /users/login - Login user and authenticate
 
 // DELETE /users/logout - Logout current user and remove token
 
