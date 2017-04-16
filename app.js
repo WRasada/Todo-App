@@ -125,6 +125,18 @@ app.get('/users/profile', authenticate, (req, res) => {
 
 // POST /users/login - Login user and authenticate
 
+app.post('/users/login', (req, res) => {
+  let body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send({ user });
+    })
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
+});
+
 // DELETE /users/logout - Logout current user and remove token
 
 
