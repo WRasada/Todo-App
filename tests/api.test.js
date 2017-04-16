@@ -161,12 +161,14 @@ describe('DELETE /todos/:id', () => {
 
 describe('POST /users', () => {
   it('should create a new user', (done) => {
-    let user = new User({ email: 'test@gmail.com', password: 'abc123'})
+    let user = { email: 'test@gmail.com', password: 'abc123'};
     request(app)
       .post('/users')
       .send(user)
       .expect(200)
       .expect((res) => {
+        expect(res.header['x-auth']).toExist();
+        expect(res.body.user._id).toExist();
         expect(res.body.user.email).toBe(user.email);
       })
       .end((err, res) => {

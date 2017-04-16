@@ -32,6 +32,22 @@ const UserSchema = new Schema({
   }]
 })
 
+UserSchema.methods.toJSON = function () {
+  let user = this;
+
+  return _.pick(user, ['_id', 'email']);
+}
+
+UserSchema.methods.generateAuthToken = function () {
+  let user = this;
+  let access = 'auth';
+  let token = jwt.sign({ _id: user._id, access }, process.env.JWT_SECRET);
+
+  return user.save().then(() => {
+    return token;
+  });
+}
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = { User };
