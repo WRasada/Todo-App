@@ -28,6 +28,10 @@ const UserSchema = new Schema({
     access: {
       type: String,
       required: true
+    },
+    token: {
+      type: String,
+      required: true
     }
   }]
 })
@@ -63,7 +67,7 @@ UserSchema.statics.findByToken = function (token) {
   return User.findOne({
     '_id': decoded._id,
     'tokens.token': token,
-    'tokens.acess': 'auth'
+    'tokens.access': 'auth'
   });
 }
 

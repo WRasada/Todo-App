@@ -1,9 +1,10 @@
 const { ObjectID } = require('mongodb');
+const { User }     = require('./../models/user');
 
 let middleware = {};
 
 middleware.authenticate = (req, res, next) => {
-  let token = req.headers['x-auth'];
+  let token = req.header('x-auth');
 
   User.findByToken(token).then((user) => {
     if (!user) {
@@ -13,7 +14,7 @@ middleware.authenticate = (req, res, next) => {
     req.token = token;
     next();
   }).catch((e) => {
-    res.status(401).send();
+    res.status(401).send(e);
   });
 };
 

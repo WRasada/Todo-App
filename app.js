@@ -119,6 +119,10 @@ app.post('/users', (req, res) => {
 
 // GET /users/profile - Show logged in user profile
 
+app.get('/users/profile', authenticate, (req, res) => {
+  res.send(req.user);
+});
+
 // POST /users/login - Login user and authenticate
 
 // DELETE /users/logout - Logout current user and remove token
