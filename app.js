@@ -22,8 +22,8 @@ app.use(bodyParser.json());
 
 // GET /todos - Show todos
 
-app.get('/todos', (req, res) => {
-  Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {
+  Todo.find({ _creator: req.user._id }).then((todos) => {
     if (!todos) {
       return res.status(404).send();
     }
@@ -36,8 +36,8 @@ app.get('/todos', (req, res) => {
 
 // POST /todos - Create new todo
 
-app.post('/todos', (req, res) => {
-  let todo = new Todo({ text: req.body.text });
+app.post('/todos', authenticate, (req, res) => {
+  let todo = new Todo({ _creator: req.user._id, text: req.body.text });
 
   todo.save().then((todo) => {
     res.send({todo});
@@ -48,7 +48,7 @@ app.post('/todos', (req, res) => {
 
 // GET /todos/:id - Show a single todo
 
-app.get('/todos/:id', isValid,  (req, res) => {
+app.get('/todos/:id', authenticate, isValid,  (req, res) => {
   let id = req.params.id;
 
   Todo.findById(id).then((todo) => {
@@ -64,7 +64,7 @@ app.get('/todos/:id', isValid,  (req, res) => {
 
 // PATCH /todos/:id - Edit a single todo
 
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id', authenticate, (req, res) => {
   let id = req.params.id;
   let body = _.pick(req.body, ['text', 'completed']); // Properties to be updated
 
@@ -88,7 +88,7 @@ app.patch('/todos/:id', (req, res) => {
 
 // DELETE /todos/:id - Delete a single todo
 
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticate, (req, res) => {
   let id = req.params.id;
 
   Todo.findOneAndRemove({ _id: id }).then((todo) => {

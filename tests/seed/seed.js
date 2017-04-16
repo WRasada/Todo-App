@@ -11,9 +11,11 @@ const todos = [
   {
     _id: new ObjectID(),
     text: 'this is my first todo',
+    _creator: userOneId
   }, {
     _id: new ObjectID(),
     text: 'this is my second todo',
+    _creator: userTwoId,
     completed: true
   }
 ];
