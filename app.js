@@ -139,6 +139,13 @@ app.post('/users/login', (req, res) => {
 
 // DELETE /users/logout - Logout current user and remove token
 
+app.delete('/users/logout', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send('Successfully logged out');
+  }, () => {
+    res.status(400).send();
+  });
+});
 
 app.listen(port, () => {
   console.log(`Started server on port: ${port}`);
